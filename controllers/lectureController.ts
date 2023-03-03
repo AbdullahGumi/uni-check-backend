@@ -6,8 +6,12 @@ import { StudentLecture } from "../models/studentLectureModel";
 
 const createLecture = async (req: Request, res: Response) => {
   try {
-    const { courseName, courseCode } = req.body;
-    const lecture = await Lecture.create({ courseName, courseCode });
+    const { courseName, courseCode, validityPeriod } = req.body;
+    const lecture = await Lecture.create({
+      courseName,
+      courseCode,
+      validityPeriod,
+    });
     if (lecture) {
       return res.status(201).send({
         lectureId: lecture.lectureId,

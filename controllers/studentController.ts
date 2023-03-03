@@ -22,6 +22,10 @@ const checkInStudent = async (req: Request, res: Response) => {
       Lecture.findByPk(lectureId),
     ]);
 
+    if (!lecture!.isLectureValid()) {
+      return res.status(403).send("Lecture is no longer valid");
+    }
+
     const errors = [];
 
     if (!student) {

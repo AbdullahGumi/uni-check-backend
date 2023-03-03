@@ -13,14 +13,13 @@ import { Student } from "./studentModel";
 interface LectureAttributes {
   courseName: string;
   courseCode: string;
+  validityPeriod: string;
 }
 
 @Table({
   tableName: "lecture",
   timestamps: true,
 })
-
-// TODO: Add validity field that indicates how long lecture token is active
 class Lecture extends Model<LectureAttributes> {
   @PrimaryKey
   @Column({
@@ -42,6 +41,12 @@ class Lecture extends Model<LectureAttributes> {
   })
   courseCode!: number;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  validityPeriod!: string;
+
   @BelongsToMany(
     () => Student,
     () => StudentLecture,
@@ -49,6 +54,11 @@ class Lecture extends Model<LectureAttributes> {
     "registrationNumber"
   )
   students!: Student[];
+
+  isLectureValid(): boolean {
+    const now = new Date().toISOString();
+    return now <= this.validityPeriod;
+  }
 }
 
 export { Lecture };
