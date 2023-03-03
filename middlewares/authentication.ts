@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { Admin } from "../models/adminModel";
 
 import { Student } from "../models/studentModel";
 import { CustomRequest, JWTP } from "../types";
@@ -41,27 +42,62 @@ const validateUser = async (
   }
 };
 
-const validateToken = async (
+const validateAdmin = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
+  const { phoneNumber, email, registrationNumber } = req.body;
 
-    if (!token) {
-      throw new Error();
+  try {
+    const [phoneNumberCheck, emailCheck] = await Promise.all([
+      Admin.findOne({ where: { phoneNumber } }),
+      Admin.findOne({ where: { email } }),
+    ]);
+    const errors = [];
+
+    if (phoneNumberCheck) {
+      errors.push(`PhoneNumber ${phoneNumber} already taken`);
+    }
+    if (emailCheck) {
+      errors.push(`Email ${email} already taken`);
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!, {
-      ignoreExpiration: false,
-    }) as JWTP;
-    (req as CustomRequest).token = decoded;
+    if (errors.length > 0) {
+      return res.status(409).send(errors);
+    }
 
     next();
-  } catch (err) {
-    res.status(401).send("Invalid Token");
+  } catch (error) {
+    return res.status(500).send(error);
   }
 };
 
-export { validateUser, validateToken };
+const validateToken =
+  (requiredRole: "admin" | "student") =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.header("Authorization")?.replace("Bearer ", "");
+
+      if (!token) {
+        throw new Error();
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!, {
+        ignoreExpiration: false,
+      }) as JWTP;
+      (req as CustomRequest).token = decoded;
+
+      if (decoded.role !== requiredRole) {
+        throw new Error(
+          "Access denied. You do not have the required role to access this resource."
+        );
+      }
+
+      next();
+    } catch (err: any) {
+      res.status(401).send(err.message || "Invalid Token");
+    }
+  };
+
+export { validateUser, validateToken, validateAdmin };

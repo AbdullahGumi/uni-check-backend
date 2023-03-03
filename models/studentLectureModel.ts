@@ -1,12 +1,8 @@
 import { Model, Table, Column } from "sequelize-typescript";
 
 interface StudentLectureAttributes {
-  id: number;
-  fullName: string;
   registrationNumber: string;
-  email: string;
-  phoneNumber: string;
-  pin: string;
+  lectureId: number;
 }
 
 @Table({
@@ -18,7 +14,7 @@ class StudentLecture extends Model<StudentLectureAttributes> {
   id!: number;
 
   @Column
-  studentId!: number;
+  registrationNumber!: string;
 
   @Column
   lectureId!: number;

@@ -6,5 +6,7 @@ export interface CustomRequest extends Request {
 }
 
 export interface JWTP extends JwtPayload {
-  id: string;
+  role: "admin" | "student";
+  registrationNumber: string;
+  adminId: string;
 }

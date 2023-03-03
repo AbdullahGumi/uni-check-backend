@@ -11,7 +11,6 @@ import { Lecture } from "./lectureModel";
 import { StudentLecture } from "./studentLectureModel";
 
 interface StudentAttributes {
-  id: number;
   fullName: string;
   registrationNumber: string;
   email: string;
@@ -19,20 +18,11 @@ interface StudentAttributes {
   pin: string;
 }
 
-interface StudentCreationAttributes extends Optional<StudentAttributes, "id"> {}
-
 @Table({
   tableName: "student",
   timestamps: true,
 })
-class Student extends Model<StudentAttributes, StudentCreationAttributes> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id!: number;
-
+class Student extends Model<StudentAttributes> {
   @Column({
     type: DataType.STRING,
     allowNull: false,
@@ -43,6 +33,7 @@ class Student extends Model<StudentAttributes, StudentCreationAttributes> {
     type: DataType.STRING(50),
     allowNull: false,
     unique: true,
+    primaryKey: true,
   })
   registrationNumber!: string;
 
@@ -67,7 +58,12 @@ class Student extends Model<StudentAttributes, StudentCreationAttributes> {
   })
   pin!: string;
 
-  @BelongsToMany(() => Lecture, () => StudentLecture, "studentId", "lectureId")
+  @BelongsToMany(
+    () => Lecture,
+    () => StudentLecture,
+    "registrationNumber",
+    "lectureId"
+  )
   lectures!: Lecture[];
 }
 

@@ -7,6 +7,50 @@ import { Student } from "../models/studentModel";
 
 import { CustomRequest } from "../types";
 
+import { StudentLecture } from "../models/studentLectureModel";
+
+const checkInStudent = async (req: Request, res: Response) => {
+  try {
+    const { lectureId } = req.body;
+
+    const [student, lecture] = await Promise.all([
+      Student.findOne({
+        where: {
+          registrationNumber: (req as CustomRequest).token.registrationNumber,
+        },
+      }),
+      Lecture.findByPk(lectureId),
+    ]);
+
+    const errors = [];
+
+    if (!student) {
+      errors.push("Student not found");
+    }
+
+    if (!lecture) {
+      errors.push("Lecture not found");
+    }
+
+    if (errors.length > 0) {
+      return res.status(409).send(errors);
+    }
+
+    // Associate the student with the lecture by creating a new record in the student_lecture table
+    await StudentLecture.create({
+      registrationNumber: student!.registrationNumber,
+      lectureId: lecture!.lectureId,
+    });
+
+    res.send(
+      `Successfully checked in ${student!.fullName} for ${lecture!.courseName}`
+    );
+  } catch (error) {
+    console.log("checkInError", error);
+    res.status(500).send("Internal server error");
+  }
+};
+
 const getAllStudents = async (req: Request, res: Response) => {
   try {
     const students = await Student.findAll();
@@ -29,7 +73,7 @@ const getStudentInfo = async (req: Request, res: Response) => {
     const student = await Student.findOne({
       attributes: { exclude: ["pin", "updatedAt", "createdAt", "id"] },
       where: {
-        id: (req as CustomRequest).token.id,
+        registrationNumber: (req as CustomRequest).token.registrationNumber,
       },
       include: {
         model: Lecture,
@@ -55,7 +99,7 @@ const verifyPin = async (req: Request, res: Response) => {
 
     const student = await Student.findOne({
       where: {
-        id: (req as CustomRequest).token.id,
+        registrationNumber: (req as CustomRequest).token.registrationNumber,
       },
     });
     if (student) {
@@ -78,4 +122,4 @@ const verifyPin = async (req: Request, res: Response) => {
   }
 };
 
-export { getAllStudents, getStudentInfo, verifyPin };
+export { getAllStudents, getStudentInfo, verifyPin, checkInStudent };

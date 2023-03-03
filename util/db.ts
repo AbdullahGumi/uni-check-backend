@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize-typescript";
 
+import { Admin } from "../models/adminModel";
 import { Lecture } from "../models/lectureModel";
 import { StudentLecture } from "../models/studentLectureModel";
 import { Student } from "../models/studentModel";
@@ -7,7 +8,7 @@ import { Student } from "../models/studentModel";
 const { DATABASE_URL_DEVELOPMENT } = require("./config");
 
 const sequelize = new Sequelize(DATABASE_URL_DEVELOPMENT, {
-  models: [Student, Lecture, StudentLecture],
+  models: [Admin, Student, Lecture, StudentLecture],
 });
 
 const connectToDatabase = async () => {

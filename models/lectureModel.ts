@@ -28,7 +28,7 @@ class Lecture extends Model<LectureAttributes> {
     defaultValue: DataType.UUIDV4,
     allowNull: false,
   })
-  lectureId!: string;
+  lectureId!: number;
 
   @Column({
     type: DataType.STRING,
@@ -42,7 +42,12 @@ class Lecture extends Model<LectureAttributes> {
   })
   courseCode!: number;
 
-  @BelongsToMany(() => Student, () => StudentLecture, "lectureId", "studentId")
+  @BelongsToMany(
+    () => Student,
+    () => StudentLecture,
+    "lectureId",
+    "registrationNumber"
+  )
   students!: Student[];
 }
 
