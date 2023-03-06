@@ -1,4 +1,5 @@
-import { Model, DataType, Table, Column } from "sequelize-typescript";
+import { Model, DataType, Table, Column, HasMany } from "sequelize-typescript";
+import { Lecture } from "./lectureModel";
 
 interface AdminAttributes {
   fullName: string;
@@ -38,6 +39,9 @@ class Admin extends Model<AdminAttributes> {
     allowNull: false,
   })
   password!: string;
+
+  @HasMany(() => Lecture, "adminId")
+  lectures!: Lecture[];
 }
 
 export { Admin };

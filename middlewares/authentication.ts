@@ -47,7 +47,7 @@ const validateAdmin = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { phoneNumber, email, registrationNumber } = req.body;
+  const { phoneNumber, email } = req.body;
 
   try {
     const [phoneNumberCheck, emailCheck] = await Promise.all([

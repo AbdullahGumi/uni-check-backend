@@ -22,6 +22,27 @@ const checkInStudent = async (req: Request, res: Response) => {
       Lecture.findByPk(lectureId),
     ]);
 
+    const hasCheckedIn = await StudentLecture.findOne({
+      where: {
+        lectureId: lectureId,
+        registrationNumber: student?.registrationNumber,
+      },
+    });
+
+    if (hasCheckedIn) {
+      return res
+        .status(403)
+        .send(`You have already checked in for ${lecture!.courseCode}`);
+    } else {
+      // Associate the student with the lecture by creating a new record in the student_lecture table
+      await StudentLecture.create({
+        fullName: student!.fullName,
+        phoneNumber: student!.phoneNumber,
+        registrationNumber: student!.registrationNumber,
+        lectureId: lecture!.lectureId,
+      });
+    }
+
     if (!lecture!.isLectureValid()) {
       return res.status(403).send("Lecture is no longer valid");
     }
@@ -40,15 +61,7 @@ const checkInStudent = async (req: Request, res: Response) => {
       return res.status(409).send(errors);
     }
 
-    // Associate the student with the lecture by creating a new record in the student_lecture table
-    await StudentLecture.create({
-      registrationNumber: student!.registrationNumber,
-      lectureId: lecture!.lectureId,
-    });
-
-    res.send(
-      `Successfully checked in ${student!.fullName} for ${lecture!.courseName}`
-    );
+    res.send(`You have successfully checked in for ${lecture!.courseCode}`);
   } catch (error) {
     console.log("checkInError", error);
     res.status(500).send("Internal server error");
@@ -79,9 +92,13 @@ const getStudentInfo = async (req: Request, res: Response) => {
       where: {
         registrationNumber: (req as CustomRequest).token.registrationNumber,
       },
-      include: {
-        model: Lecture,
-      },
+      include: [
+        {
+          model: Lecture,
+          attributes: ["courseCode", "courseName", "createdAt"],
+          through: { attributes: [] },
+        },
+      ],
     });
     if (student) {
       return res.status(200).send(student);

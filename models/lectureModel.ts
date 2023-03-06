@@ -5,15 +5,20 @@ import {
   Column,
   PrimaryKey,
   BelongsToMany,
+  ForeignKey,
+  BelongsTo,
 } from "sequelize-typescript";
+import { Admin } from "./adminModel";
 import { StudentLecture } from "./studentLectureModel";
 
 import { Student } from "./studentModel";
 
 interface LectureAttributes {
+  lectureId?: string;
   courseName: string;
   courseCode: string;
   validityPeriod: string;
+  adminId: number;
 }
 
 @Table({
@@ -27,7 +32,7 @@ class Lecture extends Model<LectureAttributes> {
     defaultValue: DataType.UUIDV4,
     allowNull: false,
   })
-  lectureId!: number;
+  lectureId!: string;
 
   @Column({
     type: DataType.STRING,
@@ -46,6 +51,16 @@ class Lecture extends Model<LectureAttributes> {
     allowNull: false,
   })
   validityPeriod!: string;
+
+  @ForeignKey(() => Admin)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  adminId!: number;
+
+  @BelongsTo(() => Admin)
+  admin!: Admin;
 
   @BelongsToMany(
     () => Student,

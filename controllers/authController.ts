@@ -72,7 +72,7 @@ const login = async (req: Request, res: Response) => {
         res.setHeader("Authorization", "Bearer " + token);
 
         return res.status(200).send({
-          fulll: student.fullName,
+          fullName: student.fullName,
           registrationNumber: student.registrationNumber,
           email: student.email,
           phoneNumber: student.phoneNumber,
@@ -155,7 +155,7 @@ const loginAdmin = async (req: Request, res: Response) => {
         res.setHeader("Authorization", "Bearer " + token);
 
         return res.status(200).send({
-          fulll: admin.fullName,
+          fullName: admin.fullName,
           email: admin.email,
           phoneNumber: admin.phoneNumber,
         });
