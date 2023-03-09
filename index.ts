@@ -31,7 +31,7 @@ app.use("/api/lectures", lectureRoutes.router);
 
 const main = async () => {
   await connectToDatabase();
-  await sequelize.sync({ alter: true });
+  await sequelize.sync({ force: true });
 
   app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);

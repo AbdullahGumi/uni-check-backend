@@ -19,6 +19,6 @@ router.delete(
   validateToken("admin"),
   deleteLectureByAdminId
 );
-router.get("/attendace", validateToken("admin"), getLectureAttendace);
+router.get("/attendance/:id", validateToken("admin"), getLectureAttendace);
 
 export default { router };

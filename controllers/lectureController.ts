@@ -73,13 +73,19 @@ const getAllAdminLectures = async (req: Request, res: Response) => {
 };
 
 const getLectureAttendace = async (req: Request, res: Response) => {
-  const { lectureId } = req.body;
+  const { id } = req.params;
   try {
     const lecture = await StudentLecture.findAll({
-      attributes: { exclude: ["updatedAt", "createdAt", "id"] },
       where: {
-        lectureId,
+        lectureId: id,
       },
+      attributes: [
+        "fullName",
+        "phoneNumber",
+        "registrationNumber",
+        "lectureId",
+        "createdAt",
+      ],
     });
     if (lecture) {
       return res.status(200).send(lecture);
