@@ -61,7 +61,10 @@ const checkInStudent = async (req: Request, res: Response) => {
       return res.status(409).send(errors);
     }
 
-    res.send(`You have successfully checked in for ${lecture!.courseCode}`);
+    res.json({
+      message: `You have successfully checked in for ${lecture!.courseCode}`,
+      data: lecture,
+    });
   } catch (error) {
     console.log("checkInError", error);
     res.status(500).send("Internal server error");

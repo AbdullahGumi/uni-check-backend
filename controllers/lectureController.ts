@@ -101,32 +101,30 @@ const getLectureAttendace = async (req: Request, res: Response) => {
   }
 };
 
-const deleteLectureByAdminId = async (req: Request, res: Response) => {
-  const lectureId = req.params.id;
+const deleteLectureAttendance = async (req: Request, res: Response) => {
+  const { id } = req.params;
 
   try {
-    const lecture = await Lecture.findOne({
+    await StudentLecture.destroy({ where: { lectureId: id } });
+    await Lecture.destroy({
       where: {
-        lectureId,
+        lectureId: id,
         adminId: Number((req as CustomRequest).token.adminId),
       },
     });
 
-    if (!lecture) {
-      return res.status(404).send("Lecture not found");
-    }
-
-    await lecture.destroy();
-
-    return res.status(204).send();
+    return res
+      .status(204)
+      .send("Lecture and attendance records deleted successfully.");
   } catch (error: any) {
-    return res.status(500).send(error.message);
+    return res.status(500).send(`Error deleting lecture: ${error.message}`);
   }
 };
+
 export {
   createLecture,
   getAllLectures,
   getLectureAttendace,
   getAllAdminLectures,
-  deleteLectureByAdminId,
+  deleteLectureAttendance,
 };

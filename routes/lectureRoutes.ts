@@ -5,7 +5,7 @@ import {
   getAllLectures,
   getLectureAttendace,
   getAllAdminLectures,
-  deleteLectureByAdminId,
+  deleteLectureAttendance,
 } from "../controllers/lectureController";
 import { validateToken } from "../middlewares/authentication";
 
@@ -17,7 +17,7 @@ router.get("/my-lectures", validateToken("admin"), getAllAdminLectures);
 router.delete(
   "/delete-lecture/:id",
   validateToken("admin"),
-  deleteLectureByAdminId
+  deleteLectureAttendance
 );
 router.get("/attendance/:id", validateToken("admin"), getLectureAttendace);
 
